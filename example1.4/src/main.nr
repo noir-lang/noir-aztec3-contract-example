@@ -10,35 +10,35 @@ contract PrivateToken {
     // Should eventually be replaced by:
     // `balances: Mapping<Field, Set<Note>>;`
     /**********************************/
-    
+
     fn constructor(
         /**********************************/
         // Should eventually be hidden:
         call_context: abi::CallContext, 
         contract_deployment_data: abi::ContractDeploymentData,
         /**********************************/
-        
+
         initial_supply: Field, owner: Point
     ) {
         /**********************************/
         // Should eventually be hidden:
         let mut public_inputs: pub abi::PublicInputs = abi::PublicInputs::new();
-        
+
         public_inputs.call_context = call_context;
         public_inputs.contract_deployment_data = contract_deployment_data;
-        
+
         public_inputs.args[0] = initial_supply;
         public_inputs.args[1] = owner.x;
         public_inputs.args[2] = owner.y;
-        
+
         let exec_ctx = ExecutionContext::new(public_inputs);
         /**********************************/
-         
+
         let owner_balance = balances.at(owner.x);
         let note = Note::new(initial_supply, owner);
-        
+
         owner_balance.insert(exec_ctx, note);
-        
+
         /**********************************/
         // Eventually hidden:
         exec_ctx // Return this, but NOT PUBLIC!
