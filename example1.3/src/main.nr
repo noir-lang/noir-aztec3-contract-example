@@ -6,7 +6,7 @@ contract PrivateToken {
     use dep::aztec3::abi;
 
     //*********************************/
-    // global a = Set::new(/*storage_slot*/ 1);
+    global a = Set { storage_slot: 1 };
     // Should eventually be replaced by:
     // `a: Set<Note>;`
     //*********************************/
@@ -24,21 +24,21 @@ contract PrivateToken {
         //*********************************/
         // Should eventually be hidden:
         let mut public_inputs = abi::PublicInputs::empty();
-        
+
         public_inputs.call_context = call_context;
         public_inputs.contract_deployment_data = contract_deployment_data;
-        
+
         public_inputs.args[0] = value;
         public_inputs.args[1] = owner.x;
         public_inputs.args[2] = owner.y;
 
-        // context.public_inputs = public_inputs;
-        Context::new(public_inputs)
         //*********************************/
-         
-        // let note = Note::new(value, owner);
-        // a.insert(exec_ctx, note);
-        
+
+        let context = Context::new(public_inputs);
+
+        let note = Note::new(value, owner);
+        a.insert(context, note)
+
         //*********************************/
         // Eventually hidden:
         // exec_ctx // Return this, but NOT PUBLIC!
