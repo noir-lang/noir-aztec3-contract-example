@@ -12,7 +12,7 @@ contract PrivateToken {
     //*********************************/
     fn constructor(
         context : pub Context,
-    ) -> pub Context {
+    ) {
         let value = context.public_inputs.args[0];
         let owner = Point{
             x: context.public_inputs.args[1],
@@ -20,6 +20,6 @@ contract PrivateToken {
         };
 
         let note = Note::new(value, owner);
-        a.insert(context, note)
+        a.insert(context, note);
     }
 }
