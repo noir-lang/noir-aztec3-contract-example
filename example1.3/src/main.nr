@@ -14,34 +14,23 @@ contract PrivateToken {
     fn constructor(
         //*********************************/
         // Should eventually be hidden:
-        call_context: pub abi::CallContext, 
-        contract_deployment_data: pub abi::ContractDeploymentData,
+        // call_context: pub abi::CallContext, 
+        // contract_deployment_data: pub abi::ContractDeploymentData,
         //**********************************/
-
-        value: pub Field,
+        mut context : pub Context,
+        value: Field,
         owner: pub Point,
     ) -> pub Context {
-        //*********************************/
-        // Should eventually be hidden:
-        let mut public_inputs = abi::PublicInputs::empty();
+        // public_inputs.call_context = call_context;
+        // public_inputs.contract_deployment_data = contract_deployment_data;
 
-        public_inputs.call_context = call_context;
-        public_inputs.contract_deployment_data = contract_deployment_data;
-
-        public_inputs.args[0] = value;
-        public_inputs.args[1] = owner.x;
-        public_inputs.args[2] = owner.y;
-
-        //*********************************/
-
-        let context = Context::new(public_inputs);
+        constrain context.public_inputs.args[0] == value;
+        constrain context.public_inputs.args[1] == owner.x;
+        constrain context.public_inputs.args[2] == owner.y;
 
         let note = Note::new(value, owner);
         a.insert(context, note)
 
-        //*********************************/
-        // Eventually hidden:
-        // exec_ctx // Return this, but NOT PUBLIC!
-        //*********************************/
+
     }
 }
