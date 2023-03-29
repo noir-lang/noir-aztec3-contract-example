@@ -10,27 +10,16 @@ contract PrivateToken {
     // Should eventually be replaced by:
     // `a: Set<Note>;`
     //*********************************/
-
     fn constructor(
-        //*********************************/
-        // Should eventually be hidden:
-        // call_context: pub abi::CallContext, 
-        // contract_deployment_data: pub abi::ContractDeploymentData,
-        //**********************************/
-        mut context : pub Context,
-        value: Field,
-        owner: Point,
+        context : pub Context,
     ) -> pub Context {
-        // public_inputs.call_context = call_context;
-        // public_inputs.contract_deployment_data = contract_deployment_data;
-
-        constrain context.public_inputs.args[0] == value;
-        constrain context.public_inputs.args[1] == owner.x;
-        constrain context.public_inputs.args[2] == owner.y;
+        let value = context.public_inputs.args[0];
+        let owner = Point{
+            x: context.public_inputs.args[1],
+            y: context.public_inputs.args[2]
+        };
 
         let note = Note::new(value, owner);
         a.insert(context, note)
-
-
     }
 }
