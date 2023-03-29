@@ -19,7 +19,7 @@ contract PrivateToken {
         //**********************************/
         mut context : pub Context,
         value: Field,
-        owner: pub Point,
+        owner: Point,
     ) -> pub Context {
         // public_inputs.call_context = call_context;
         // public_inputs.contract_deployment_data = contract_deployment_data;
