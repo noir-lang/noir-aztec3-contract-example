@@ -1,9 +1,10 @@
 contract PrivateToken {
-    use dep::aztec3::context::Context;
     use dep::aztec3::note::Note;
     use dep::aztec3::note::Point;
     use dep::aztec3::set::Set;
     use dep::aztec3::abi;
+    use dep::aztec3::abi::Inputs;
+    use dep::aztec3::abi::Outputs;
 
     //*********************************/
     global a = Set { storage_slot: 1 };
@@ -14,30 +15,29 @@ contract PrivateToken {
     fn constructor(
         //*********************************/
         // Should eventually be hidden:
-        call_context: pub abi::CallContext, 
-        contract_deployment_data: pub abi::ContractDeploymentData,
-        //**********************************/
-
-        value: pub Field,
-        owner: pub Point,
-    ) -> pub Context {
+        // call_context: pub abi::CallContext, 
+        // contract_deployment_data: pub abi::ContractDeploymentData,
+        // //**********************************/
+        // value: pub Field,
+        // owner: pub Point,
+        inputs: pub Inputs,
+    ) -> pub Outputs {
         //*********************************/
         // Should eventually be hidden:
-        let mut public_inputs = abi::PublicInputs::empty();
 
-        public_inputs.call_context = call_context;
-        public_inputs.contract_deployment_data = contract_deployment_data;
+        // inputs.call_context = call_context;
+        // inputs.contract_deployment_data = contract_deployment_data;
 
-        public_inputs.args = public_inputs.args.push(value);
-        public_inputs.args = public_inputs.args.push(owner.x);
-        public_inputs.args = public_inputs.args.push(owner.y);
+        let value = inputs.args[0];
+        let owner = Point::new(inputs.args[1], inputs.args[2]);
 
         //*********************************/
 
-        let context = Context::new(public_inputs);
-
+        let mut outputs = Outputs::new();
         let note = Note::new(value, owner);
-        a.insert(context, note)
+        outputs = a.insert(inputs, outputs, note);
+
+        outputs.finish()
 
         //*********************************/
         // Eventually hidden:
