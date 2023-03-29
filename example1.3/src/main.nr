@@ -28,9 +28,9 @@ contract PrivateToken {
         public_inputs.call_context = call_context;
         public_inputs.contract_deployment_data = contract_deployment_data;
 
-        public_inputs.args[0] = value;
-        public_inputs.args[1] = owner.x;
-        public_inputs.args[2] = owner.y;
+        public_inputs.args = public_inputs.args.push(value);
+        public_inputs.args = public_inputs.args.push(owner.x);
+        public_inputs.args = public_inputs.args.push(owner.y);
 
         //*********************************/
 

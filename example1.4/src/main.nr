@@ -29,9 +29,9 @@ contract PrivateToken {
         public_inputs.call_context = call_context;
         public_inputs.contract_deployment_data = contract_deployment_data;
 
-        public_inputs.args[0] = initial_supply;
-        public_inputs.args[1] = owner.x;
-        public_inputs.args[2] = owner.y;
+        public_inputs.args = public_inputs.args.push(initial_supply);
+        public_inputs.args = public_inputs.args.push(owner.x);
+        public_inputs.args = public_inputs.args.push(owner.y);
 
         let mut ctx = Context::new(public_inputs);
         //*********************************/
@@ -46,8 +46,7 @@ contract PrivateToken {
         // ctx // Return this, but NOT PUBLIC!
         //*********************************/
     }
-    
-    
+
     fn transfer(
         //*********************************/
         // Should eventually be hidden:
@@ -62,22 +61,22 @@ contract PrivateToken {
         //*********************************/
         // Should eventually be hidden:
         let mut public_inputs = abi::PublicInputs::empty();
-        
+
         public_inputs.call_context = call_context;
         public_inputs.contract_deployment_data = contract_deployment_data;
-        
-        public_inputs.args[0] = amount;
-        public_inputs.args[1] = sender.x;
-        public_inputs.args[2] = sender.y;
-        public_inputs.args[3] = recipient.x;
-        public_inputs.args[4] = recipient.y;
-        
+
+        public_inputs.args = public_inputs.args.push(amount);
+        public_inputs.args = public_inputs.args.push(sender.x);
+        public_inputs.args = public_inputs.args.push(sender.y);
+        public_inputs.args = public_inputs.args.push(recipient.x);
+        public_inputs.args = public_inputs.args.push(recipient.y);
+
         let ctx1 = Context::new(public_inputs);
         //*********************************/
-        
+
         let sender_balance = balances.at(sender.x);
         let (mut ctx, sender_notes) = sender_balance.get_2(ctx1);
-        
+
         let mut sum = 0;
         for i in 0..2 {
             let note = sender_notes[i];
@@ -95,15 +94,15 @@ contract PrivateToken {
 
         ctx = sender_balance.remove(ctx, sender_notes[0]);
         ctx = sender_balance.remove(ctx, sender_notes[1]);
-        
+
         let recipient_note = Note::new(amount, recipient);
         let change_note = Note::new(change_value, sender);
-        
+
         let recipient_balance = balances.at(recipient.x);
         ctx = recipient_balance.insert(ctx, recipient_note);
-        
+
         ctx = sender_balance.insert(ctx, change_note);
-        
+
         //*********************************/
         // Eventually hidden:
         ctx // Return this, but NOT PUBLIC!
