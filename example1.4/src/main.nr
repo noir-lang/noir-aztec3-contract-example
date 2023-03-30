@@ -88,7 +88,7 @@ contract PrivateToken {
             sum += note.value;
         }
 
-        constrain sum as u64 >= amount as u64;
+        constrain sum as u64 >= (amount as u64);
 
         let change_value = sum - amount;
 
