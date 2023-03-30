@@ -5,6 +5,7 @@ contract PrivateToken {
     use dep::aztec3::abi;
     use dep::aztec3::abi::Inputs;
     use dep::aztec3::abi::Outputs;
+    use dep::aztec3::abi::FinalOutputs;
 
     //*********************************/
     global a = Set { storage_slot: 1 };
@@ -21,7 +22,7 @@ contract PrivateToken {
         // value: pub Field,
         // owner: pub Point,
         inputs: pub Inputs,
-    ) -> pub Outputs {
+    ) -> pub FinalOutputs {
         //*********************************/
         // Should eventually be hidden:
 
@@ -37,7 +38,7 @@ contract PrivateToken {
         let note = Note::new(value, owner);
         outputs = a.insert(inputs, outputs, note);
 
-        outputs.finish()
+        outputs.finish(inputs)
 
         //*********************************/
         // Eventually hidden:
