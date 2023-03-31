@@ -1,6 +1,7 @@
 contract PrivateToken {
     use dep::aztec3::abi::Inputs;
     use dep::aztec3::abi::Outputs;
+    use dep::aztec3::abi::FinalOutputs;
     use dep::aztec3::note::Note;
     use dep::aztec3::note::Point;
     use dep::aztec3::set::Set;
@@ -22,7 +23,7 @@ contract PrivateToken {
         // initial_supply: pub Field, 
         // owner: pub Point,
         inputs: pub Inputs,
-    ) -> pub Outputs {
+    ) -> pub FinalOutputs {
         //*********************************/
         // Should eventually be hidden:
         // let mut public_inputs = abi::PublicInputs::empty();
@@ -40,7 +41,7 @@ contract PrivateToken {
         let note = Note::new(initial_supply, owner);
 
         owner_balance.insert(inputs, outputs, note)
-            .finish()
+            .finish(inputs)
 
         //*********************************/
         // Eventually hidden:
@@ -59,7 +60,7 @@ contract PrivateToken {
         // sender: pub Point, 
         // recipient: pub Point
         inputs: pub Inputs,
-    ) -> pub Outputs {
+    ) -> pub FinalOutputs {
         //*********************************/
         // Should eventually be hidden:
         // let mut public_inputs = abi::PublicInputs::empty();
@@ -75,25 +76,27 @@ contract PrivateToken {
         //*********************************/
 
         let sender_balance = balances.at(sender.x);
-        let (mut outputs, sender_notes) = sender_balance.get_2(inputs, outputs1);
+        let (mut outputs, (note1, note2)) = sender_balance.get_2(inputs, outputs1);
 
         let mut sum = 0;
-        for i in 0..2 {
-            let note = sender_notes[i];
+        let constrain_note = |note: Note| {
             if note.is_dummy {
                 constrain note.value == 0;
             }
             constrain sender.x == note.owner.x;
             constrain sender.y == note.owner.y;
-            sum += note.value;
-        }
+            note.value
+        };
+        sum += constrain_note(note1);
+        sum += constrain_note(note2);
+
 
         constrain sum as u64 >= amount as u64;
 
         let change_value = sum - amount;
 
-        outputs = sender_balance.remove(inputs, outputs, sender_notes[0]);
-        outputs = sender_balance.remove(inputs, outputs, sender_notes[1]);
+        outputs = sender_balance.remove(inputs, outputs, note1);
+        outputs = sender_balance.remove(inputs, outputs, note2);
 
         let recipient_note = Note::new(amount, recipient);
         let change_note = Note::new(change_value, sender);
@@ -105,7 +108,7 @@ contract PrivateToken {
 
         //*********************************/
         // Eventually hidden:
-        outputs.finish() // Return this, but NOT PUBLIC!
+        outputs.finish(inputs) // Return this, but NOT PUBLIC!
         //*********************************/
     }
 }
